@@ -8,10 +8,11 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/chanxuehong/wechat/qrcode"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/chanxuehong/wechat/qrcode"
 )
 
 // 创建临时二维码
@@ -36,7 +37,7 @@ func (c *Client) QRCodeTemporaryCreate(sceneId uint32, expireSeconds int) (_qrco
 
 	hasRetry := false
 RETRY:
-	token, err := c.Token()
+	token, err := c.TokenRefresh()
 	if err != nil {
 		return
 	}
@@ -50,6 +51,14 @@ RETRY:
 		result.TemporaryQRCode.SceneId = sceneId
 		_qrcode = &result.TemporaryQRCode
 		return
+	case errCodeInvalidCredential:
+		println(errCodeInvalidCredential)
+		if !hasRetry {
+			hasRetry = true
+			timeoutRetryWait()
+			goto RETRY
+		}
+		fallthrough
 
 	case errCodeTimeout:
 		if !hasRetry {

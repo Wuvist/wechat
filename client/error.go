@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	errCodeOK      = 0
-	errCodeTimeout = 42001
+	errCodeOK                = 0
+	errCodeTimeout           = 42001
+	errCodeInvalidCredential = 40001
 )
 
 func timeoutRetryWait() {
